@@ -1,0 +1,18 @@
+{
+    "usuarios": [
+        {
+            "id": 0,
+            "nome": "Demétrius Jr.",
+            "usuario": "demetriusjr",
+            "senha": "12345"
+        }
+    ],
+    "entradas": [
+        {
+            "id": 0,
+            "usuarioId": 0,
+            "data": 1684207529107,
+            "conteudo": "Entrada de teste."
+        }
+    ]
+}
