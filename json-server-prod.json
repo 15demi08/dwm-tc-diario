@@ -1,0 +1,6 @@
+{
+    "static" : "./build",
+    "routes": {
+        "/api/*": "/$1"
+    }
+}

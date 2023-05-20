@@ -11,7 +11,11 @@
         {
             "id": 0,
             "usuarioId": 0,
-            "data": 1684207529107,
+            "data": {
+                "dia": 1,
+                "mes": 5,
+                "ano": 2023
+            },
             "conteudo": "Entrada de teste."
         }
     ]
