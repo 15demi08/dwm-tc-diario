@@ -22,7 +22,7 @@ export default function PaginaInicial() {
             { nome: "Novembro", dias: 30 },
             { nome: "Dezembro", dias: 31 }
         ],
-        diasNoMesAtualDoAnoAtual = [],
+        diasNoMesEscolhidoDoAnoEscolhido = [],
 
         [ano, setAno] = React.useState(anoAtual),
 
@@ -50,7 +50,7 @@ export default function PaginaInicial() {
     meses[1].dias = dia1Mar.getDate(); // Dias de Fevereiro
 
     for (let i = 1; i < meses[mes].dias + 1; i++) {
-        diasNoMesAtualDoAnoAtual.push(i);
+        diasNoMesEscolhidoDoAnoEscolhido.push(i);
     }
 
     return <>
@@ -87,7 +87,7 @@ export default function PaginaInicial() {
 
         <List disablePadding>
             {
-                diasNoMesAtualDoAnoAtual.map((dia) => {
+                diasNoMesEscolhidoDoAnoEscolhido.map((dia) => {
                     return <ListItem key={dia} disableGutters>
                         <ListItemButton>
                             <ListItemIcon>
