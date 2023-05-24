@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { FormControl, Icon, InputLabel, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Select, Stack } from "@mui/material";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Icon, InputLabel, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Select, Stack, Typography } from "@mui/material";
 
 export default function PaginaInicial() {
 
     const
         /**  */
         hoje = new Date(), // Dia de Hoje, na vida real
-        [ diaAtual, mesAtual, anoAtual ] = [ hoje.getDate(), hoje.getMonth(), hoje.getFullYear() ],
+        [diaAtual, mesAtual, anoAtual] = [hoje.getDate(), hoje.getMonth(), hoje.getFullYear()],
         anos = [], // Guarda os dez últimos anos, incluindo anoAtual
         meses = [
             { nome: "Janeiro", dias: 31 },
@@ -29,6 +29,8 @@ export default function PaginaInicial() {
 
         [mes, setMes] = useState(mesAtual),
 
+        [dialogoAberto, setDialogoAberto] = React.useState(false),
+
         dia1Mar = new Date(ano, 2, 1);
 
     for (let i = anoAtual; i > (anoAtual - 11); i--) {
@@ -42,7 +44,7 @@ export default function PaginaInicial() {
 
         diasNoMesEscolhidoDoAnoEscolhido.push(i);
 
-        if(ano === anoAtual && mes === mesAtual && i === diaAtual)
+        if (ano === anoAtual && mes === mesAtual && i === diaAtual)
             break;
 
     }
@@ -73,6 +75,20 @@ export default function PaginaInicial() {
 
     }
 
+    function abrirDialogo() {
+        setDialogoAberto(true);
+    }
+
+    function fecharDialogo() {
+        console.log("Fechando diálogo");
+        setDialogoAberto(false);
+    }
+
+    function confirmarDialogo() {
+        console.log("Confirmando diálogo");
+        setDialogoAberto(false);
+    }
+
     /**
      * Retorna os itens do select do Mês
      * @returns Array de \<MenuItem />
@@ -85,36 +101,34 @@ export default function PaginaInicial() {
 
     }
 
-    /* Carregar os dados da API e colocá-los nos respectivos itens na lista */
-/*     useEffect(() => {
-
-    }, []); */
-
     return <>
 
-        <Stack direction="row" sx={{ padding: 1, position: 'sticky' }}>
-
-            <FormControl sx={{ m: 1, flex: 1 }} size="small">
-                <InputLabel id="ano">Ano</InputLabel>
-                <Select labelId="ano" id="selectAno" value={ano} label="Ano" onChange={escolherAno}>
-                    { anos.map( (ano) => <MenuItem key={ano} value={ano}>{ano}</MenuItem> ) }
-                </Select>
-            </FormControl>
-
-            <FormControl sx={{ m: 1, flex: 2 }} size="small">
-                <InputLabel id="mes">Mês</InputLabel>
-                <Select labelId="mes" id="selectMes" value={mes} label="Mês" onChange={escolherMes}>
-                    { selectMeses() }
-                </Select>
-            </FormControl>
-
-        </Stack>
+        <Box sx={{
+            position: 'sticky',
+            top: 56,
+            backgroundColor: '#FFF',
+            borderBottom: '1px solid #DDD',
+            zIndex: 1
+        }}
+        >
+            <List disablePadding>
+                <ListItemButton onClick={abrirDialogo}>
+                    <ListItemIcon>
+                        <Icon>calendar_month</Icon>
+                    </ListItemIcon>
+                    <ListItemText
+                        primary={<Typography variant="h5">{`${meses[mes].nome} de ${ano}`}</Typography>}
+                        secondary={<Typography variant="caption">Toque/Clique aqui para alterar</Typography>}
+                    />
+                </ListItemButton>
+            </List>
+        </Box>
 
         <List disablePadding>
             {
-                diasNoMesEscolhidoDoAnoEscolhido.map((dia) => 
+                diasNoMesEscolhidoDoAnoEscolhido.map((dia) =>
                     <ListItem key={dia} disableGutters>
-                        <ListItemButton component={RouterLink} to={`/detalhes?usuarioId=0&ano=${ano}&mes=${mes}&dia=${dia}`}>
+                        <ListItemButton component={RouterLink} to={`/${ano}/${mes}/${dia}`}>
                             <ListItemIcon>
                                 <Icon>label</Icon>
                             </ListItemIcon>
@@ -124,6 +138,30 @@ export default function PaginaInicial() {
                 )
             }
         </List>
+
+        <Dialog open={dialogoAberto} onClose={fecharDialogo}>
+            <DialogTitle>Alterar Mês e Ano</DialogTitle>
+            <DialogContent>
+                <Stack direction="column">
+                    <FormControl sx={{ m: 1, flex: 1 }} size="small">
+                        <InputLabel id="mes">Mês</InputLabel>
+                        <Select labelId="mes" id="selectMes" value={mes} label="Mês" onChange={escolherMes}>
+                            {selectMeses()}
+                        </Select>
+                    </FormControl>
+                    <FormControl sx={{ m: 1, flex: 1 }} size="small">
+                        <InputLabel id="ano">Ano</InputLabel>
+                        <Select labelId="ano" id="selectAno" value={ano} label="Ano" onChange={escolherAno}>
+                            {anos.map((ano) => <MenuItem key={ano} value={ano}>{ano}</MenuItem>)}
+                        </Select>
+                    </FormControl>
+                </Stack>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={confirmarDialogo}>OK</Button>
+                <Button onClick={fecharDialogo}>Cancelar</Button>
+            </DialogActions>
+        </Dialog>
 
     </>;
 }
