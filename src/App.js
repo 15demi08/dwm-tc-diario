@@ -1,40 +1,37 @@
 import React, { useEffect } from 'react';
-import { Route, Routes, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { AppBar, CssBaseline, Icon, Toolbar, Typography } from '@mui/material';
-import PaginaDetalhes from './paginas/PaginaDetalhes';
-import PaginaInicial from './paginas/PaginaInicial';
 
 export default function App() {
 
-  const
-    hoje = new Date(),
-    [ mesAtual, anoAtual ] = [ hoje.getMonth(), hoje.getFullYear() ],
-    navegar = useNavigate();
+    const
+        n = useNavigate(),
+        l = useLocation(),
+        hoje = new Date(),
+        [anoReal, mesReal] = [hoje.getFullYear(), hoje.getMonth()];
 
-  useEffect(()=>{
-    console.log("Navegando...");
-    navegar(`/${anoAtual}/${mesAtual}`);
-  // eslint-disable-next-line
-  }, []);
+    useEffect(() => {
 
-  return <>
+        if( l.pathname === "/" ) // Se estivermos na raíz (primeiro acesso)
+            n(`/${anoReal}/${mesReal+1}`, { replace: true }) // Navegue para a página inicial (Ano e Mês reais como "estado inicial")
 
-    <CssBaseline />
+    });
 
-    <AppBar position='fixed'>
-      <Toolbar>
-        <Typography variant='h6' flex={1}>Diário Pessoal</Typography>
-        <Icon>menu_book</Icon>
-      </Toolbar>
-    </AppBar>
+    return <>
 
-    <Toolbar></Toolbar>
+        <CssBaseline />
 
-    <Routes>
-      <Route path='/:ano/:mes/' element={<PaginaInicial />} />
-      <Route path='/:ano/:mes/:dia' element={<PaginaDetalhes />} />
-    </Routes>
+        <AppBar position='fixed'>
+            <Toolbar>
+                <Typography variant='h6' flex={1}>Diário Pessoal</Typography>
+                <Icon>menu_book</Icon>
+            </Toolbar>
+        </AppBar>
 
-  </>
+        <Toolbar />
+
+        <Outlet />
+
+    </>
 
 }

@@ -1,14 +1,18 @@
-import React, { useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Icon, InputLabel, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Select, Stack, Typography } from "@mui/material";
+import axios from "axios";
 
 export default function PaginaInicial() {
 
+
     const
-        /**  */
+        navegar = useNavigate(),
+        localizacao = useLocation(),
+        [anoURL, mesURL] = localizacao.pathname.split("/").slice(1, 3).map(s => Number(s)), // "/2023/4" => [2023, 4]
         hoje = new Date(), // Dia de Hoje, na vida real
-        [diaAtual, mesAtual, anoAtual] = [hoje.getDate(), hoje.getMonth(), hoje.getFullYear()],
-        anos = [], // Guarda os dez últimos anos, incluindo anoAtual
+        [diaReal, mesReal, anoReal] = [hoje.getDate(), hoje.getMonth(), hoje.getFullYear()],
+        anos = [], // Guarda os dez últimos anos, incluindo anoReal
         meses = [
             { nome: "Janeiro", dias: 31 },
             { nome: "Fevereiro", dias: 0 }, // Dias de fevereiro são calculados mais abaixo
@@ -25,43 +29,47 @@ export default function PaginaInicial() {
         ],
         diasNoMesEscolhidoDoAnoEscolhido = [], // Acredito que o nome é descritivo o suficiente XD
 
-        [ano, setAno] = useState(anoAtual),
+        [ano, setAno] = useState(anoURL),
+        [mes, setMes] = useState(mesURL-1),
 
-        [mes, setMes] = useState(mesAtual),
+        [anoEscolhido, setAnoEscolhido] = useState(anoURL),
+        [mesEscolhido, setMesEscolhido] = useState(mesURL-1),
 
         [dialogoAberto, setDialogoAberto] = React.useState(false),
 
         dia1Mar = new Date(ano, 2, 1);
 
-    for (let i = anoAtual; i > (anoAtual - 11); i--) {
+    // Últimos dez anos, incluindo anoReal
+    for (let i = anoReal; i > (anoReal - 11); i--) {
         anos.push(i);
     }
 
+    // Dias de Fevereiro
     dia1Mar.setDate(dia1Mar.getDate() - 1);
-    meses[1].dias = dia1Mar.getDate(); // Dias de Fevereiro
+    meses[1].dias = dia1Mar.getDate(); // Mais especificamente, o último dia de Fevereiro do ano em questão
 
     for (let i = 1; i < meses[mes].dias + 1; i++) {
 
-        diasNoMesEscolhidoDoAnoEscolhido.push(i);
+        diasNoMesEscolhidoDoAnoEscolhido.push(false);
 
-        if (ano === anoAtual && mes === mesAtual && i === diaAtual)
+        if (ano === anoReal && mes === mesReal && i === diaReal)
             break;
 
     }
 
     /**
     * Disparado pelo onChange no select do Ano
-    * @param {event} e 
+    * @param {event} e O evento de mudança do valor (onChange)
     */
     function escolherAno(e) {
 
         const anoEscolhido = e.target.value;
 
-        if (anoEscolhido === anoAtual)
-            if (mes > mesAtual)
-                setMes(mesAtual);
+        if (anoEscolhido === anoReal)
+            if (mesEscolhido > mesReal)
+                setMesEscolhido(mesReal);
 
-        setAno(anoEscolhido);
+        setAnoEscolhido(anoEscolhido);
 
     }
 
@@ -71,7 +79,7 @@ export default function PaginaInicial() {
      */
     function escolherMes(e) {
 
-        setMes(e.target.value)
+        setMesEscolhido(e.target.value)
 
     }
 
@@ -79,13 +87,16 @@ export default function PaginaInicial() {
         setDialogoAberto(true);
     }
 
-    function fecharDialogo() {
-        console.log("Fechando diálogo");
+    function cancelarDialogo() {
+        console.log("Cancelando diálogo");
         setDialogoAberto(false);
     }
 
     function confirmarDialogo() {
         console.log("Confirmando diálogo");
+        navegar(`/${anoEscolhido}/${mesEscolhido+1}`, { replace: true })
+        setAno(anoEscolhido);
+        setMes(mesEscolhido);
         setDialogoAberto(false);
     }
 
@@ -95,11 +106,26 @@ export default function PaginaInicial() {
      */
     function selectMeses() {
 
-        const mesesDoAnoEscolhido = (ano === anoAtual ? meses.slice(0, mesAtual + 1) : meses);
-
-        return mesesDoAnoEscolhido.map((mes, posicao) => <MenuItem key={posicao} value={posicao} selected={posicao === mesAtual}>{mes.nome}</MenuItem>)
+        return (
+            anoEscolhido === anoReal
+                ? meses.slice(0, mesReal + 1)
+                : meses
+            ).map((mes, posicao) => <MenuItem key={posicao} value={posicao}>{mes.nome}</MenuItem>)
 
     }
+
+    /* useEffect(()=>{
+
+        axios.get(`http://localhost:1165/api/entradas?ano=${ano}&mes=${mes}`)
+            .then((entradas) => {
+                if(entradas.data.length > 0) {
+                    for( let entrada of entradas.data ){
+                        diasNoMesEscolhidoDoAnoEscolhido[entrada.dia] = true;
+                    }
+                }
+            });
+
+    }, [ano, mes]); */
 
     return <>
 
@@ -126,32 +152,32 @@ export default function PaginaInicial() {
 
         <List disablePadding>
             {
-                diasNoMesEscolhidoDoAnoEscolhido.map((dia) =>
-                    <ListItem key={dia} disableGutters>
-                        <ListItemButton component={RouterLink} to={`/${ano}/${mes}/${dia}`}>
+                diasNoMesEscolhidoDoAnoEscolhido.map((temEntrada, posicao) =>
+                    <ListItem key={posicao} disableGutters>
+                        <ListItemButton component={RouterLink} to={`/${ano}/${mes+1}/${posicao+1}`}>
                             <ListItemIcon>
-                                <Icon>label</Icon>
+                                <Icon>{temEntrada ? 'turned_in' : 'turned_in_not'}</Icon>
                             </ListItemIcon>
-                            <ListItemText primary={new Date(ano, mes, dia).toLocaleDateString()} secondary="Sem Entrada" />
+                            <ListItemText primary={new Date(ano, mes, posicao+1).toLocaleDateString()} secondary={ temEntrada ? "Entrada Registrada" : "Sem Entrada"} />
                         </ListItemButton>
                     </ListItem>
                 )
             }
         </List>
 
-        <Dialog open={dialogoAberto} onClose={fecharDialogo}>
+        <Dialog open={dialogoAberto}>
             <DialogTitle>Alterar Mês e Ano</DialogTitle>
             <DialogContent>
                 <Stack direction="column">
                     <FormControl sx={{ m: 1, flex: 1 }} size="small">
                         <InputLabel id="mes">Mês</InputLabel>
-                        <Select labelId="mes" id="selectMes" value={mes} label="Mês" onChange={escolherMes}>
+                        <Select labelId="mes" id="selectMes" value={mesEscolhido} label="Mês" onChange={escolherMes}>
                             {selectMeses()}
                         </Select>
                     </FormControl>
                     <FormControl sx={{ m: 1, flex: 1 }} size="small">
                         <InputLabel id="ano">Ano</InputLabel>
-                        <Select labelId="ano" id="selectAno" value={ano} label="Ano" onChange={escolherAno}>
+                        <Select labelId="ano" id="selectAno" value={anoEscolhido} label="Ano" onChange={escolherAno}>
                             {anos.map((ano) => <MenuItem key={ano} value={ano}>{ano}</MenuItem>)}
                         </Select>
                     </FormControl>
@@ -159,7 +185,7 @@ export default function PaginaInicial() {
             </DialogContent>
             <DialogActions>
                 <Button onClick={confirmarDialogo}>OK</Button>
-                <Button onClick={fecharDialogo}>Cancelar</Button>
+                <Button onClick={cancelarDialogo}>Cancelar</Button>
             </DialogActions>
         </Dialog>
 
