@@ -30,7 +30,7 @@ export default function PaginaInicial() {
 
         console.log(`Confirmando diálogo - Ano: ${anoEscolhido}, Mês: ${mesEscolhido}`);
 
-        if (anoEscolhido !== ano && mesEscolhido !== mes) {
+        if (anoEscolhido !== ano || mesEscolhido !== mes) {
 
             navegar(`/${anoEscolhido}/${mesEscolhido + 1}`, { replace: true })
             setAno(anoEscolhido);

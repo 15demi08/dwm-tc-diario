@@ -1,44 +1,60 @@
 {
-    "usuarios": [
-        {
-            "id": 0,
-            "nome": "Demétrius Jr.",
-            "usuario": "demetriusjr",
-            "senha": "12345"
-        }
-    ],
-    "entradas": [
-        {
-            "id": 0,
-            "usuarioId": 0,
-            "dia": 1,
-            "mes": 4,
-            "ano": 2023,
-            "conteudo": "Entrada de teste em 01/05/2023."
-        },
-        {
-            "id": 1,
-            "usuarioId": 0,
-            "dia": 1,
-            "mes": 4,
-            "ano": 2023,
-            "conteudo": "Entrada de teste em 01/05/2023."
-        },
-        {
-            "id": 2,
-            "usuarioId": 0,
-            "dia": 20,
-            "mes": 3,
-            "ano": 2023,
-            "conteudo": "Entrada de teste em 20/04/2023."
-        },
-        {
-            "id": 3,
-            "usuarioId": 1,
-            "dia": 20,
-            "mes": 3,
-            "ano": 2023,
-            "conteudo": "Entrada de teste de outro usuário (inexistente, no momento)"
-        }
-    ]
+  "usuarios": [
+    {
+      "id": 0,
+      "nome": "Demétrius Jr.",
+      "usuario": "demetriusjr",
+      "senha": "12345"
+    }
+  ],
+  "entradas": [
+    {
+      "id": 1,
+      "usuarioId": 0,
+      "dia": 2,
+      "mes": 4,
+      "ano": 2023,
+      "conteudo": "Entrada de teste em 02/05/2023. Teste 2. Ao quadrado."
+    },
+    {
+      "id": 2,
+      "usuarioId": 0,
+      "dia": 20,
+      "mes": 3,
+      "ano": 2023,
+      "conteudo": "Entrada de teste em 20/04/2023."
+    },
+    {
+      "id": 4,
+      "usuarioId": "0",
+      "dia": "3",
+      "mes": "4",
+      "ano": "2023",
+      "conteudo": "Nova entrada."
+    },
+    {
+      "id": 5,
+      "usuarioId": "0",
+      "dia": "27",
+      "mes": "4",
+      "ano": "2023",
+      "conteudo": "Concluindo trabalho de DWM :D"
+    },
+    {
+      "id": 6,
+      "usuarioId": "0",
+      "dia": "1",
+      "mes": "4",
+      "ano": "2023",
+      "conteudo": "Testando"
+    },
+    {
+      "id": 7,
+      "usuarioId": "0",
+      "dia": "4",
+      "mes": "4",
+      "ano": "2023",
+      "conteudo": "Teste"
+    }
+  ]
 }

@@ -11,48 +11,41 @@ export default function ListaPeriodo({ ano, mes }) {
     const
         idUsuario = 0, // DEV - O produto final usaria algo como contextProvider - ou talvez exatamente isso 🤔
         diaReal = new Date().getDate(),
-        [carregado, setCarregado] = useState(false);
-
-    let entradasNosDiasDoMesEspecificado = Array(meses(ano)[mes].dias).fill(false);
-
-    if (ano === anoReal() && mes === mesReal()) {
-
-        entradasNosDiasDoMesEspecificado = entradasNosDiasDoMesEspecificado.slice(0, diaReal);
-
-    }
+        [entradasNosDiasDoMesEspecificado, setEntradasNosDiasDoMesEspecificado] = useState([]);
 
     useEffect(() => {
 
         const url = `http://localhost:1165/entradas?usuarioId=${idUsuario}&ano=${ano}&mes=${mes}`;
 
-        console.log("URL da Requisição: " + url);
-
         axios.get(url)
             .then(
                 (entradas) => {
-                    console.log("Resposta: ");
-                    console.log(entradas);
+
+                    let resultado = Array(meses(ano)[mes].dias).fill(false);
+
                     if (entradas.data.length > 0) {
+
                         for (let entrada of entradas.data) {
-                            console.log("Entrada: ");
-                            console.log(entrada);
-                            entradasNosDiasDoMesEspecificado[entrada.dia - 1] = true;
+                            resultado[entrada.dia - 1] = true;
                         }
+
+
                     }
-                    console.log("Array de booleans: ");
-                    console.log(entradasNosDiasDoMesEspecificado);
-                    setCarregado(true);
-                },
-                () => setCarregado(false)
+
+                    if (ano === anoReal() && mes === mesReal())
+                        resultado = resultado.slice(0, diaReal);
+
+                    setEntradasNosDiasDoMesEspecificado(resultado);
+                }
             );
 
-    }, [ano, mes, entradasNosDiasDoMesEspecificado]);
+    }, [ano, mes]);
 
     return <List disablePadding>
-        {!carregado
+        {entradasNosDiasDoMesEspecificado.length === 0
             ? <LinearProgress />
-            : entradasNosDiasDoMesEspecificado.map((temEntrada, posicao) =>
-                <ListItem key={posicao} disableGutters>
+            : entradasNosDiasDoMesEspecificado.map((temEntrada, posicao) => {
+                return <ListItem key={posicao} disableGutters>
                     <ListItemButton component={RouterLink} to={`/${ano}/${mes + 1}/${posicao + 1}`}>
                         <ListItemIcon>
                             <Icon>{temEntrada ? 'turned_in' : 'turned_in_not'}</Icon>
@@ -60,7 +53,7 @@ export default function ListaPeriodo({ ano, mes }) {
                         <ListItemText primary={new Date(ano, mes, posicao + 1).toLocaleDateString()} secondary={temEntrada ? "Entrada Registrada" : "Sem Entrada"} />
                     </ListItemButton>
                 </ListItem>
-            )
+            })
         }
     </List>
 

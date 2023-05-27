@@ -1,17 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom';
+
 import './index.css';
 import App from './App';
-import { Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom';
 import PaginaInicial from './paginas/PaginaInicial';
-import PaginaDetalhes from './paginas/PaginaDetalhes';
+import PaginaDetalhes, { atualizarEntrada } from './paginas/PaginaDetalhes';
 // import reportWebVitals from './reportWebVitals';
 
 const router = createBrowserRouter(
     createRoutesFromElements(
         <Route path="/" element={<App />}>
             <Route path='/:ano/:mes' element={<PaginaInicial />} />
-            <Route path='/:ano/:mes/:dia' element={<PaginaDetalhes />} />
+            <Route path='/:ano/:mes/:dia' element={<PaginaDetalhes />} action={atualizarEntrada} />
         </Route>
     )
 );
